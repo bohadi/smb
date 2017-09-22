@@ -14,21 +14,21 @@ console.log();
 
 var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
 
-var sphere = BABYLON.Mesh.CreateSphere('sphere1', 2, 2, scene);
-sphere.position.y = 3;
-sphere.convertToFlatShadedMesh();
-var sphere = BABYLON.Mesh.CreateSphere('sphere1', 4, 2, scene);
-sphere.position.y = 3;
-sphere.position.x = 3;
-sphere.convertToFlatShadedMesh();
-var sphere = BABYLON.Mesh.CreateSphere('sphere1', 8, 2, scene);
-sphere.position.y = 3;
-sphere.position.x = 6;
-sphere.convertToFlatShadedMesh();
-var sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
-sphere.position.y = 3;
-sphere.position.x = 9;
-sphere.convertToFlatShadedMesh();
+var sphere1 = BABYLON.Mesh.CreateSphere('sphere1', 2, 2, scene);
+sphere1.position.y = 3;
+sphere1.convertToFlatShadedMesh();
+var sphere2 = BABYLON.Mesh.CreateSphere('sphere2', 4, 2, scene);
+sphere2.position.y = 3;
+sphere2.position.x = 3;
+sphere2.convertToFlatShadedMesh();
+var sphere3 = BABYLON.Mesh.CreateSphere('sphere3', 8, 2, scene);
+sphere3.position.y = 3;
+sphere3.position.x = 6;
+sphere3.convertToFlatShadedMesh();
+var sphere4 = BABYLON.Mesh.CreateSphere('sphere4', 16, 2, scene);
+sphere4.position.y = 3;
+sphere4.position.x = 9;
+sphere4.convertToFlatShadedMesh();
 
 var ground = BABYLON.Mesh.CreateGround('ground1', 60, 60, 4, scene);
 ground.material = new BABYLON.StandardMaterial('grass', scene);
