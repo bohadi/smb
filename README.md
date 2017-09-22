@@ -1,2 +1,2 @@
 
-webgl web app
+webgl demo
