@@ -37,9 +37,10 @@ var _initControls = function (camera) {
   camera.keysLeft  = [65]; //a
   camera.keysDown  = [83]; //s
   camera.keysRight = [68]; //d
-  camera.speed   = 0.5; //default 2
-  camera.inertia = 0.9; //default 0.9
-  camera.fov     = 1.1; //default 0.8, 1 radian ≈ 57.3°
+  camera.fov                =   1.1;  //default 0.8, 1 radian ≈ 57.3°
+  camera.speed              =   1.2;  //default 2
+  camera.inertia            =   0.75; //default 0.9
+  camera.angularSensibility = 750;    //default 2000, lower faster
   //camera.applyGravity    = true;
   camera.checkCollisions = true;
 }

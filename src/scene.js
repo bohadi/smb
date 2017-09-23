@@ -14,6 +14,7 @@ console.log();
 
 var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
 
+//meshes
 var sphere1 = BABYLON.MeshBuilder.CreateSphere('sphere1', {segments:2, diameter:2}, scene);
 sphere1.position.y = 3;
 sphere1.convertToFlatShadedMesh();
@@ -40,7 +41,9 @@ var lathe = BABYLON.MeshBuilder.CreateLathe('lathe', {shape: [
 ]})
 lathe.position.y = 2;
 lathe.position.x = -2;
+lathe.convertToFlatShadedMesh();
 
+//materials
 var ground = BABYLON.MeshBuilder.CreateGround('ground1',
   {width:60, height:60, subdivisions:4}, scene);
 ground.material = new BABYLON.StandardMaterial('grass', scene);
@@ -52,6 +55,7 @@ ground.material.specularColor = new BABYLON.Color3(0,0,0);
 sphere4.material = new BABYLON.StandardMaterial('rainbow', scene);
 sphere4.material.diffuseTexture = new BABYLON.Texture('./img/rainbow.jpg', scene);
 
+//animations
 var animationZ = new BABYLON.Animation('a1', 'rotation.z', 30,
   BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE);
 var animationY = new BABYLON.Animation('a2', 'position.y', 30,
@@ -77,6 +81,21 @@ keys.push({ frame: 100, value: .0 });
 animationX.setKeys(keys)
 sphere4.animations = [ animationY, animationZ ];
 scene.beginAnimation(sphere4, 0, 100, true);
+
+//sprites
+var numShrubs = 3000;
+var shrubtreeSpriteManager =
+  new BABYLON.SpriteManager('shrubtreeMgr', 'img/sprite_tree.png', numShrubs+1, 650, scene);
+var tree = new BABYLON.Sprite('tree', shrubtreeSpriteManager);
+tree.size = 20;
+tree.position.y = tree.size/2 - 1;
+tree.position.z = 25;
+for (var i = 0; i < numShrubs; i++) {
+  var shrub = new BABYLON.Sprite("tree", shrubtreeSpriteManager);
+  shrub.position.x =  -30 + 60*Math.random();
+  shrub.position.z =  -30 + 60*Math.random();
+  shrub.size       =   .5 + .5*Math.random();
+}
 
 //render the scene and post-setup
 window.addEventListener('DOMContentLoaded', function() {
