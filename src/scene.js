@@ -8,10 +8,30 @@ const CC = require('./cameraControls.js');
 var canvas = document.getElementById('renderCanvas');
 var engine = new BABYLON.Engine(canvas, true);
 var scene = new BABYLON.Scene(engine);
+
+//camera and controls
 var camera = CC.setupCameraAndControls(canvas, scene);
 
-console.log();
+//fullscreen
+var isFullScreen = false;
+document.addEventListener("fullscreenchange",  		  onFullScreenChange, false);
+document.addEventListener("mozfullscreenchange", 		onFullScreenChange, false);
+document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
+document.addEventListener("msfullscreenchange", 		onFullScreenChange, false);
+function onFullScreenChange() {
+  if 	    (document.fullscreen !== undefined)        	isFullScreen = document.fullscreen;
+  else if (document.mozFullScreen !== undefined)      isFullScreen = document.mozFullScreen;
+  else if (document.webkitIsFullScreen !== undefined) isFullScreen = document.webkitIsFullScreen;
+  else if (document.msIsFullScreen !== undefined)     isFullScreen = document.msIsFullScreen;
+}
+switchFullscreen = function () {
+  if (isFullScreen) BABYLON.Tools.ExitFullscreen();
+  else BABYLON.Tools.RequestFullscreen(canvas);
+};
+//canvas.onclick = switchFullscreen();
 
+
+//lighting
 var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
 
 //meshes
@@ -104,9 +124,9 @@ window.addEventListener('DOMContentLoaded', function() {
     scene.render();
     fps.innerHTML = engine.getFps().toFixed(0) + ' fps';
   });
-  //resize
   window.addEventListener('resize', function() {
     engine.resize();
   });
+
 });
 
