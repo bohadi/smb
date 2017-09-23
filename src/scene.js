@@ -14,12 +14,12 @@ var camera = CC.setupCameraAndControls(canvas, scene);
 
 //fullscreen
 var isFullScreen = false;
-document.addEventListener("fullscreenchange",  		  onFullScreenChange, false);
-document.addEventListener("mozfullscreenchange", 		onFullScreenChange, false);
+document.addEventListener("fullscreenchange",  	    onFullScreenChange, false);
+document.addEventListener("mozfullscreenchange", 	onFullScreenChange, false);
 document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
-document.addEventListener("msfullscreenchange", 		onFullScreenChange, false);
+document.addEventListener("msfullscreenchange", 	onFullScreenChange, false);
 function onFullScreenChange() {
-  if 	    (document.fullscreen !== undefined)        	isFullScreen = document.fullscreen;
+  if 	  (document.fullscreen !== undefined)         isFullScreen = document.fullscreen;
   else if (document.mozFullScreen !== undefined)      isFullScreen = document.mozFullScreen;
   else if (document.webkitIsFullScreen !== undefined) isFullScreen = document.webkitIsFullScreen;
   else if (document.msIsFullScreen !== undefined)     isFullScreen = document.msIsFullScreen;
@@ -29,7 +29,6 @@ switchFullscreen = function () {
   else BABYLON.Tools.RequestFullscreen(canvas);
 };
 //canvas.onclick = switchFullscreen();
-
 
 //lighting
 var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
@@ -114,6 +113,22 @@ for (var i = 0; i < numShrubs; i++) {
   var shrub = new BABYLON.Sprite("tree", shrubtreeSpriteManager);
   shrub.position.x =  -30 + 60*Math.random();
   shrub.position.z =  -30 + 60*Math.random();
+  shrub.size       =   .5 + .5*Math.random();
+}
+
+//distant valley
+var ground2 = BABYLON.MeshBuilder.CreateGround('ground2',
+  {width:600, height:600, subdivisions:4}, scene);
+ground2.material = ground.material;
+ground2.position.y = -1000;
+ground2.position.z = 1000;
+var shrubtreeSpriteManager2 =
+  new BABYLON.SpriteManager('shrubtreeMgr2', 'img/sprite_tree.png', 10*numShrubs, 650, scene);
+for (var i = 0; i < 10*numShrubs; i++) {
+  var shrub = new BABYLON.Sprite("tree", shrubtreeSpriteManager2);
+  shrub.position.y = -1000
+  shrub.position.x =  -300 + 600*Math.random();
+  shrub.position.z =  1000-300 + 600*Math.random();
   shrub.size       =   .5 + .5*Math.random();
 }
 
