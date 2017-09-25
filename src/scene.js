@@ -6,8 +6,10 @@ const CC = require('./cameraControls.js');
 
 
 var canvas = document.getElementById('renderCanvas');
-var engine = new BABYLON.Engine(canvas, true);
+var engine = new BABYLON.Engine(canvas);
 var scene = new BABYLON.Scene(engine);
+
+engine.renderEvenInBackground = false;
 
 //camera and controls
 var camera = CC.setupCameraAndControls(canvas, scene);
