@@ -1,5 +1,19 @@
 const BABYLON = require('../cdn/babylon.js');
 
+//PLAYER STATE
+var p1 = {
+  weaponDrawn  : false, //can attack
+  castingMode  : false, //can use magic
+  socialMode   : false, //interact with beings
+  handMode     : false, //interact with objects
+  isSprinting  : false,
+  isRunning    : false,
+  isSneaking   : false,
+  isSwimming   : false,
+  canJumpAgain : true,
+}
+
+
 //pointerlock
 var _initPointerLock = function(canvas, camera) {
   var isPointerLocked = false;
@@ -30,18 +44,6 @@ var _initPointerLock = function(canvas, camera) {
   document.addEventListener("mspointerLockChange", pointerLockChange, false);
   document.addEventListener("mozpointerLockChange", pointerLockChange, false);
   document.addEventListener("webkitpointerLockChange", pointerLockChange, false);
-}
-
-var p1 = {
-  weaponDrawn  : false, //can attack
-  castingMode  : false, //can use magic
-  socialMode   : false, //interact with beings
-  handMode     : false, //interact with objects
-  isSprinting  : false,
-  isRunning    : false,
-  isSneaking   : false,
-  isSwimming   : false,
-  canJumpAgain : true,
 }
 
 var _initControlsKBM = function (scene, camera) {
@@ -113,10 +115,10 @@ var _initCollisionGravity = function (scene, camera) {
 
 //camera and controls
 exports.setupCameraAndControls = function(canvas, scene) {
-  var camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0,5,-10), scene);
+  var camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(1,2,-20), scene);
+  camera.setTarget(new BABYLON.Vector3(1,2,0));
   camera.fov  = 1.1;  //default 0.8, 1 radian ≈ 57.3°
   camera.minZ = 0;    //default 1
-  camera.setTarget(BABYLON.Vector3.Zero());
   camera.attachControl(canvas, false);
   _initControls(scene, camera);
   _initPointerLock(canvas, camera);
