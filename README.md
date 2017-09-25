@@ -1,1 +1,1 @@
-vr support coming soon!
+webvr support coming soon
