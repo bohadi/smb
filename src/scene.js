@@ -49,7 +49,6 @@ var sphere4 = BABYLON.MeshBuilder.CreateSphere('sphere4', {segments:16, diameter
 sphere4.position.y = 3;
 sphere4.position.x = 6;
 sphere4.convertToFlatShadedMesh();
-
 var lathe = BABYLON.MeshBuilder.CreateLathe('lathe', {shape: [
   new BABYLON.Vector3(0,0,0),
   new BABYLON.Vector3(1,.1,0),
@@ -61,16 +60,21 @@ var lathe = BABYLON.MeshBuilder.CreateLathe('lathe', {shape: [
 lathe.position.y = 2;
 lathe.position.x = -2;
 lathe.convertToFlatShadedMesh();
-
-//materials
 var ground = BABYLON.MeshBuilder.CreateGround('ground1',
   {width:60, height:60, subdivisions:4}, scene);
+sphere1.checkCollisions = true;
+sphere2.checkCollisions = true;
+sphere3.checkCollisions = true;
+sphere4.checkCollisions = true;
+lathe.checkCollisions   = true;
+ground.checkCollisions  = true;
+
+//materials
 ground.material = new BABYLON.StandardMaterial('grass', scene);
 ground.material.diffuseTexture = new BABYLON.Texture('./img/grass.png', scene);
 ground.material.diffuseTexture.uScale = 10.0;
 ground.material.diffuseTexture.vScale = 10.0;
 ground.material.specularColor = new BABYLON.Color3(0,0,0);
-
 sphere4.material = new BABYLON.StandardMaterial('rainbow', scene);
 sphere4.material.diffuseTexture = new BABYLON.Texture('./img/rainbow.jpg', scene);
 
@@ -116,28 +120,14 @@ for (var i = 0; i < numShrubs; i++) {
   shrub.size       =   .5 + .5*Math.random();
 }
 
-//distant valley
-var ground2 = BABYLON.MeshBuilder.CreateGround('ground2',
-  {width:600, height:600, subdivisions:4}, scene);
-ground2.material = ground.material;
-ground2.position.y = -1000;
-ground2.position.z = 1000;
-var shrubtreeSpriteManager2 =
-  new BABYLON.SpriteManager('shrubtreeMgr2', 'img/sprite_tree.png', 10*numShrubs, 650, scene);
-for (var i = 0; i < 10*numShrubs; i++) {
-  var shrub = new BABYLON.Sprite("tree", shrubtreeSpriteManager2);
-  shrub.position.y = -1000
-  shrub.position.x =  -300 + 600*Math.random();
-  shrub.position.z =  1000-300 + 600*Math.random();
-  shrub.size       =   .5 + .5*Math.random();
-}
-
 //render the scene and post-setup
 window.addEventListener('DOMContentLoaded', function() {
   var fps = document.getElementById('fps');
   engine.runRenderLoop(function() {
-    scene.render();
-    fps.innerHTML = engine.getFps().toFixed(0) + ' fps';
+    if (!document.hidden) { //TODO page visibility api problems
+      scene.render();
+      fps.innerHTML = engine.getFps().toFixed(0) + ' fps';
+    }
   });
   window.addEventListener('resize', function() {
     engine.resize();
