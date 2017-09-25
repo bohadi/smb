@@ -14,7 +14,7 @@ engine.renderEvenInBackground = false;
 //camera and controls
 var camera = CC.setupCameraAndControls(canvas, scene);
 
-//fullscreen
+//TODO fullscreen
 var isFullScreen = false;
 document.addEventListener("fullscreenchange",  	    onFullScreenChange, false);
 document.addEventListener("mozfullscreenchange", 	onFullScreenChange, false);
@@ -142,10 +142,8 @@ for (var i = 0; i < 10*numShrubs; i++) {
 window.addEventListener('DOMContentLoaded', function() {
   var fps = document.getElementById('fps');
   engine.runRenderLoop(function() {
-    if (!document.hidden) { //TODO page visibility api problems
-      scene.render();
-      fps.innerHTML = engine.getFps().toFixed(0) + ' fps';
-    }
+    scene.render();
+    fps.innerHTML = engine.getFps().toFixed(0) + ' fps';
   });
   window.addEventListener('resize', function() {
     engine.resize();
