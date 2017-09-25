@@ -120,6 +120,22 @@ for (var i = 0; i < numShrubs; i++) {
   shrub.size       =   .5 + .5*Math.random();
 }
 
+//distant valley
+var ground2 = BABYLON.MeshBuilder.CreateGround('ground2',
+  {width:600, height:600, subdivisions:4}, scene);
+ground2.material = ground.material;
+ground2.position.y = -1000;
+ground2.position.z = 1000;
+var shrubtreeSpriteManager2 =
+  new BABYLON.SpriteManager('shrubtreeMgr2', 'img/sprite_tree.png', 10*numShrubs, 650, scene);
+for (var i = 0; i < 10*numShrubs; i++) {
+  var shrub = new BABYLON.Sprite("tree", shrubtreeSpriteManager2);
+  shrub.position.y = -1000
+  shrub.position.x =  -300 + 600*Math.random();
+  shrub.position.z =  1000-300 + 600*Math.random();
+  shrub.size       =   .5 + .5*Math.random();
+}
+
 //render the scene and post-setup
 window.addEventListener('DOMContentLoaded', function() {
   var fps = document.getElementById('fps');

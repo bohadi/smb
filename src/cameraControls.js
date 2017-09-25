@@ -37,8 +37,8 @@ var p1 = {
   castingMode  : false, //can use magic
   socialMode   : false, //interact with beings
   handMode     : false, //interact with objects
-	isSprinting  : false,
-	isRunning    : false,
+  isSprinting  : false,
+  isRunning    : false,
   isSneaking   : false,
   isSwimming   : false,
   canJumpAgain : true,
