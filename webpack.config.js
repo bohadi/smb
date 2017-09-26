@@ -5,12 +5,7 @@ module.exports = {
   output: {
     filename: 'bundle.js'
   },
-  module: {
-    loaders: [
-      {}
-    ]
-  },
   plugins: [
     //new webpack.optimize.UglifyJsPlugin(),
-  ]
+  ],
 };
