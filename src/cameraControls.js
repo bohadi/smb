@@ -124,8 +124,16 @@ var _initControls = function (scene, camera) {
   camera.angularSensibility = 750.0;  //default 2000, lower faster
   camera.onCollide = function (collidedMesh) {
     if (collidedMesh.jumpable) {
-      //p1.canJumpAgain = true;
+      p1.canJumpAgain = true;
   }}
+  //cannot fly
+  camera._updatePosition = function() {
+    this.cameraDirection.y = 0;
+    this._collideWithWorld(this.cameraDirection);
+    if (!this.checkCollisions) {
+      this.super._updatePosition();
+    }
+  }
 }
 
 var _initCollisionGravity = function (scene, camera) {
