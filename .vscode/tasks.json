@@ -6,7 +6,8 @@
         {
             "taskName": "webpack",
             "type": "shell",
-            "command": "webpack --watch -p"
+            "command": "webpack --progress --colors -p",
+            "problemMatcher": []
         },
         {
             "taskName": "webpack dev server",
