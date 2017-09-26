@@ -96,22 +96,23 @@ var _equip = function (slot, item) {
   //TODO stat changes, sound, animation, etc
   p1.equip[slot] = item;
   item.parent = p1.body[slot];
-  if (slot == 'lHand' || slot == 'rHand') {
+  if (slot == 'lHand') {
     item.position.x =  0.1;
     item.position.y =  0.5;
     item.position.z =  1.2;
     item.rotation.x = UTIL.deg2rad(-30);
     item.rotation.y = UTIL.deg2rad(10);
-  }
-  if (slot == 'head' ) {
-  }
-  if (slot == 'chest' ) {
-  }
-  if (slot == 'arms' ) {
-  }
-  if (slot == 'legs' ) {
-  }
-  if (slot == 'feet' ) {
+  } else if (slot == 'rHand') {
+    item.position.x = -0.1;
+    item.position.y =  0.5;
+    item.position.z =  1.2;
+    item.rotation.x = UTIL.deg2rad(-30);
+    item.rotation.y = UTIL.deg2rad(-10);
+  } else if (slot == 'head' ) {
+  } else if (slot == 'chest' ) {
+  } else if (slot == 'arms' ) {
+  } else if (slot == 'legs' ) {
+  } else if (slot == 'feet' ) {
   }
 }
 var _unsheatheWeapon = function() {
@@ -174,7 +175,7 @@ var _initCharacter = function(scene, camera) {
   _intoInventory(sword); 
   //TODO 2h stance
   p1.is2HStance = true;
-  _equip('lHand', sword);
+  _equip('rHand', sword);
 }
 
 var _initControlsKBM = function (scene, camera) {
@@ -236,6 +237,7 @@ var _initControlsKBM = function (scene, camera) {
 
 var _initControls = function (scene, camera) {
   _initControlsKBM(scene, camera);
+  //TODO gamepad (and touch and vr) controls
   camera.speed              =   p1.runSpeed;  
   camera.inertia            =   p1.runInertia;
   camera.angularSensibility =   p1.runAngSens;
