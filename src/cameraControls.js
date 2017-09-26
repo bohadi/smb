@@ -1,5 +1,7 @@
 const BABYLON = require('../cdn/babylon.js');
 
+const PL = require('./pointerLock.js');
+
 //PLAYER STATE
 var p1 = {
   weaponDrawn  : false, //can attack
@@ -7,49 +9,23 @@ var p1 = {
   socialMode   : false, //interact with beings
   handMode     : false, //interact with objects
   isSprinting  : false,
-  isRunning    : false,
+  isRunning    : true,
   isSneaking   : false,
   isSwimming   : false,
   canJumpAgain : true,
+  walkSpeed          : 0.7,
+  walkInertia        : 0.10,
+  runSpeed           : 1.0,         //default 2
+  runInertia         : 0.65,        //default 0.9
+  sprintSpeed        : 1.5,
+  sprintInertia      : 0.70,
+  angularSensibility : 1200,  //default 2000, lower faster
 }
 
 
-//pointerlock
-var _initPointerLock = function(canvas, camera) {
-  var isPointerLocked = false;
-  canvas.addEventListener("click", function (evt) {
-    if (!isPointerLocked) {
-      canvas.requestPointerLock = canvas.requestPointerLock
-        || canvas.msRequestPointerLock
-        || canvas.mozRequestPointerLock
-        || canvas.webkitRequestPointerLock;
-      if (canvas.requestPointerLock) {
-        canvas.requestPointerLock();
-      }
-    }
-  }, false);
-  var pointerLockChange = function (event) {
-    var controlEnabled = (
-      document.mozPointerLockElement === canvas
-      || document.webkitPointerLockElement === canvas
-      || document.msPointerLockElement === canvas
-      || document.pointerLockElement === canvas);
-    if (!controlEnabled) {
-      camera.detachControl(canvas);
-    } else {
-      camera.attachControl(canvas);
-    }
-  };
-  document.addEventListener("pointerLockChange", pointerLockChange, false);
-  document.addEventListener("mspointerLockChange", pointerLockChange, false);
-  document.addEventListener("mozpointerLockChange", pointerLockChange, false);
-  document.addEventListener("webkitpointerLockChange", pointerLockChange, false);
-}
-
-//TODO this creates a new animation each jump...
-//TODO it does not feel smooth
-var _jump = function (scene, camera) {
-  var animation = new BABYLON.Animation("jump", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+var _initjumpAnim = function(scene, camera) {
+  var animation = new BABYLON.Animation("jump", "position.y", 30,
+    BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   var keys = [
     { frame:  0, value: camera.position.y },
     { frame: 15, value: camera.position.y + 3 },
@@ -59,9 +35,26 @@ var _jump = function (scene, camera) {
   var easefn = new BABYLON.SineEase();
   easefn.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
   animation.setEasingFunction(easefn);
+  animation.addEvent(new BABYLON.AnimationEvent(5, function() {
+    //play jump sound
+    console.log('jumpsound');
+  }))
   camera.animations.push(animation);
+}
+
+//TODO if off ground and did not jump, use jump...
+var _jump = function (scene, camera) {
   scene.beginAnimation(camera, 0, 30, false, 2);
 } 
+
+var _setRunOrWalkSpeed = function(camera) {
+  if (p1.isRunning) { 
+    camera.speed   = p1.runSpeed;
+    camera.inertia = p1.runInertia;
+  } else {
+    camera.speed   = p1.walkSpeed;
+    camera.inertia = p1.walkInertia;
+}}
 
 var _initControlsKBM = function (scene, camera) {
   camera.keysUp    = [87]; //w 87
@@ -76,25 +69,28 @@ var _initControlsKBM = function (scene, camera) {
         case 32: //spacebar jump
           console.log(p1.canJumpAgain);
           if (p1.canJumpAgain) {
-            p1.canJumpAgain = false;
             _jump(scene, camera);
+            p1.canJumpAgain = false;
           }
           break;
         case 16: //shift hold to sprint
           if (!p1.isSprinting) {
-            camera.speed   += 0.5;
-            camera.inertia += 0.05;
+            camera.speed   = p1.sprintSpeed;
+            camera.inertia = p1.sprintInertia;
             p1.isSprinting = true;
           }
           break;
         case 17: //ctrl toggle sneak
-          p1.isSneaking  = true;
+          p1.isSneaking  = !p1.isSneaking;
           break;
         case 18: //alt toggle run/walk
-          p1.isRunning   = true;
+          _setRunOrWalkSpeed(camera);
+          p1.isRunning   = !p1.isRunning;
           break;
         case 82: //r weapon drawn / sheath -> lmb/rmb unlock cursor for combat maneuver
-          p1.weaponDrawn = true;
+          p1.weaponDrawn = !p1.weaponDrawn;
+          //TODO some animation
+          console.log('weapon: '+p1.weaponDrawn);
           break;
         case 69: //e interaction mode -> lmb pick objects / rmb unlock cursor for social emote
           p1.socialMode  = true;
@@ -107,10 +103,9 @@ var _initControlsKBM = function (scene, camera) {
   scene.actionManager.registerAction(
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
       switch (evt.sourceEvent.keyCode) {
-        case 16: //shift hold to sprint
+        case 16: //shift up, stop sprinting
           if (p1.isSprinting) {
-            camera.speed   -= 0.5;
-            camera.inertia -= 0.05;
+            _setRunOrWalkSpeed(camera);
             p1.isSprinting = false;
           }
           break;
@@ -119,9 +114,9 @@ var _initControlsKBM = function (scene, camera) {
 
 var _initControls = function (scene, camera) {
   _initControlsKBM(scene, camera);
-  camera.speed              =   1.0;  //default 2
-  camera.inertia            =   0.75; //default 0.9
-  camera.angularSensibility = 750.0;  //default 2000, lower faster
+  camera.speed              =   p1.runSpeed;  
+  camera.inertia            =   p1.runInertia;
+  camera.angularSensibility =   p1.angularSensibility;
   camera.onCollide = function (collidedMesh) {
     if (collidedMesh.jumpable) {
       p1.canJumpAgain = true;
@@ -155,8 +150,9 @@ exports.setupCameraAndControls = function(canvas, scene) {
   camera.minZ = 0;    //default 1
   camera.attachControl(canvas, false);
   _initControls(scene, camera);
-  _initPointerLock(canvas, camera);
+  PL._initPointerLock(canvas, camera);
   _initCollisionGravity(scene, camera);
+  _initjumpAnim(scene, camera);
   return camera;
 }
 
