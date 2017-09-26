@@ -22,11 +22,7 @@ var camera = CC.setupCameraAndControls(canvas, scene);
 
 //TODO fullscreen
 var isFullScreen = false;
-document.addEventListener("fullscreenchange",  	    onFullScreenChange, false);
-document.addEventListener("mozfullscreenchange", 	onFullScreenChange, false);
-document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
-document.addEventListener("msfullscreenchange", 	onFullScreenChange, false);
-function onFullScreenChange() {
+var onFullScreenChange = function () {
   if 	  (document.fullscreen !== undefined)         isFullScreen = document.fullscreen;
   else if (document.mozFullScreen !== undefined)      isFullScreen = document.mozFullScreen;
   else if (document.webkitIsFullScreen !== undefined) isFullScreen = document.webkitIsFullScreen;
@@ -36,7 +32,11 @@ var switchFullscreen = function () {
   if (isFullScreen) BABYLON.Tools.ExitFullscreen();
   else BABYLON.Tools.RequestFullscreen(canvas);
 };
-//canvas.onclick = switchFullscreen();
+document.addEventListener("fullscreenchange",  	    onFullScreenChange, false);
+document.addEventListener("mozfullscreenchange", 	onFullScreenChange, false);
+document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
+document.addEventListener("msfullscreenchange", 	onFullScreenChange, false);
+canvas.onclick = switchFullscreen();
 
 //lighting
 var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
