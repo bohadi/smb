@@ -17,17 +17,15 @@
 
 <body>
   <div id="fps"></div>
-  <div id="renderZone">
   <canvas id="renderCanvas" touch-action="none"></canvas>
-  </div>
 
   <script src="./cdn/pep.min.js"></script>
   <script src="./cdn/cannon.min.js"></script>
   <script src="./cdn/babylon.js"></script>
 
+  <button onclick="switchFullscreen();" id="fullscreenButton" class="uiButton hidden" title="Switch fullscreen"> </button>
   <script src="./bundle.js"></script>
 
-  <button onclick="switchFullscreen();" id="fullscreenButton" class="uiButton hidden" title="Switch fullscreen"></button>
 
 </body>
 </html>

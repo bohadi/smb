@@ -4,9 +4,9 @@ const CANNON  = require('../cdn/cannon.min.js');
 const BABYLON = require('../cdn/babylon.js');
 
 const CC = require('./cameraControls.js');
+const PL = require('./pointerLock.js');
 
 
-var renderZone = document.getElementById('renderZone');
 var canvas = document.getElementById('renderCanvas');
 var engine = new BABYLON.Engine(canvas);
 var scene = new BABYLON.Scene(engine);
@@ -35,13 +35,15 @@ document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
 document.addEventListener("msfullscreenchange", 	  onFullScreenChange, false);
 var switchFullscreen = function () {
   if (isFullScreen) BABYLON.Tools.ExitFullscreen();
-  else BABYLON.Tools.RequestFullscreen(renderZone);
+  else BABYLON.Tools.RequestFullscreen(canvas);
 };
-//TODO doesn't resize; change from shortcut to button
+//TODO doesn't resize
+//TODO when fullscreen and walking cannot pointerlock right... window resize problem
 //TODO removes fps element
 document.addEventListener("keydown", function (evt) {
   if (evt.ctrlKey && evt.shiftKey && evt.keyCode == '70') {
     //switchFullscreen();
+    //PL._initPointerLock(canvas, null);
     engine.switchFullscreen(true);
     console.log('fs');
     //engine.resize();

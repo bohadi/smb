@@ -25,6 +25,12 @@ html, body {
   position: absolute;
   right   : 20px;
   top     : 20px;
-  color   : #FFF;
-  cursor  : default;
+  width: 40px;
+  height: 40px;
+  border-width: 1px;
+  opacity: 1.0;
+  transform: scale(0.9);
+  background: url("./img/fullscreen.png") no-repeat center center;
+  background-size: 100%;
+}
 }
