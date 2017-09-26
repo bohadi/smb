@@ -80,19 +80,12 @@ var _initControlsKBM = function (scene, camera) {
           }
           break;
         case 16: //shift hold to sprint
-          if (!p1.isSprinting) {
-            camera.speed   = p1.sprintSpeed;
-            camera.inertia = p1.sprintInertia;
-            p1.isSprinting = true;
-          }
+          camera.speed   = p1.sprintSpeed;
+          camera.inertia = p1.sprintInertia;
+          p1.isSprinting = true;
           break;
         case 17: //ctrl toggle sneak
           p1.isSneaking  = !p1.isSneaking;
-          break;
-        case 18: //alt toggle run/walk
-          //TODO alt breaks pointerlock
-          _setRunOrWalkSpeed(camera);
-          p1.isRunning   = !p1.isRunning;
           break;
         case 82: //r weapon drawn / sheath -> lmb/rmb unlock cursor for combat maneuver
           p1.weaponDrawn = !p1.weaponDrawn;
@@ -111,10 +104,13 @@ var _initControlsKBM = function (scene, camera) {
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
       switch (evt.sourceEvent.keyCode) {
         case 16: //shift up, stop sprinting
-          if (p1.isSprinting) {
-            _setRunOrWalkSpeed(camera);
-            p1.isSprinting = false;
-          }
+          p1.isSprinting = false;
+          _setRunOrWalkSpeed(camera);
+          break;
+        case 18: //alt toggle run/walk
+          //TODO alt breaks pointerlock when not in fullscreen
+          p1.isRunning = !p1.isRunning;
+          _setRunOrWalkSpeed(camera);
           break;
   }}));
 }
