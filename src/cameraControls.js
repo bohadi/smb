@@ -203,7 +203,7 @@ var _initControlsKBM = function (scene, camera) {
           camera.inertia = p1.sprintInertia;
           p1.isSprinting = true;
           break;
-        case 17: //ctrl toggle sneak
+        case 67: //c toggle sneak
           p1.isSneaking  = !p1.isSneaking;
           break;
         case 82: //r weapon drawn / sheath -> lmb/rmb unlock cursor for combat maneuver
