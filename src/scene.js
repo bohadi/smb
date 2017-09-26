@@ -1,3 +1,4 @@
+//include scripts in index.html
 const PEP     = require('../cdn/pep.min.js');
 const CANNON  = require('../cdn/cannon.min.js');
 const BABYLON = require('../cdn/babylon.js');
@@ -14,6 +15,11 @@ engine.renderEvenInBackground = false;
 //camera and controls
 var camera = CC.setupCameraAndControls(canvas, scene);
 
+//var gravity = new BABYLON.Vector3(0,-0.5,0);
+//var physicsPlugin = new BABYLON.CannonJSPlugin();
+//scene.enablePhysics(gravity, physicsPlugin);
+//console.log(scene.isPhysicsEnabled());
+
 //TODO fullscreen
 var isFullScreen = false;
 document.addEventListener("fullscreenchange",  	    onFullScreenChange, false);
@@ -26,7 +32,7 @@ function onFullScreenChange() {
   else if (document.webkitIsFullScreen !== undefined) isFullScreen = document.webkitIsFullScreen;
   else if (document.msIsFullScreen !== undefined)     isFullScreen = document.msIsFullScreen;
 }
-switchFullscreen = function () {
+var switchFullscreen = function () {
   if (isFullScreen) BABYLON.Tools.ExitFullscreen();
   else BABYLON.Tools.RequestFullscreen(canvas);
 };
@@ -70,6 +76,7 @@ sphere3.checkCollisions = true;
 sphere4.checkCollisions = true;
 lathe.checkCollisions   = true;
 ground.checkCollisions  = true;
+ground.jumpable = true;
 
 //materials
 ground.material = new BABYLON.StandardMaterial('grass', scene);

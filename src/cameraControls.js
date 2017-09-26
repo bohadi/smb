@@ -46,6 +46,21 @@ var _initPointerLock = function(canvas, camera) {
   document.addEventListener("webkitpointerLockChange", pointerLockChange, false);
 }
 
+var _jump = function (scene, camera) {
+  var animation = new BABYLON.Animation("jump", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+  var keys = [
+    { frame: 0, value: camera.position.y },
+    { frame: 15, value: camera.position.y + 2 },
+    { frame: 30, value: camera.position.y }
+  ];
+  animation.setKeys(keys);
+  var easingFunction = new BABYLON.SineEase();
+  easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT);
+  animation.setEasingFunction(easingFunction);
+  camera.animations.push(animation);
+  scene.beginAnimation(camera, 0, 30, false, 2);
+} 
+
 var _initControlsKBM = function (scene, camera) {
   camera.keysUp    = [87]; //w 87
   camera.keysLeft  = [65]; //a 65
@@ -58,15 +73,16 @@ var _initControlsKBM = function (scene, camera) {
       switch (evt.sourceEvent.keyCode) {
         case 32: //spacebar jump
           if (p1.canJumpAgain) {
-            camera.position.y += 2;
-            console.log('jumped');
+            _jump(scene, camera);
+            p1.canJumpAgain = false;
           }
-          //p1.canJumpAgain = false;
           break;
         case 16: //shift hold to sprint
-          camera.speed   += 0.5;
-          camera.inertia += 0.05;
-          p1.isSprinting = true;
+          if (!p1.isSprinting) {
+            camera.speed   += 0.5;
+            camera.inertia += 0.05;
+            p1.isSprinting = true;
+          }
           break;
         case 17: //ctrl toggle sneak
           p1.isSneaking  = true;
@@ -89,9 +105,11 @@ var _initControlsKBM = function (scene, camera) {
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
       switch (evt.sourceEvent.keyCode) {
         case 16: //shift hold to sprint
-          camera.speed   -= 0.5;
-          camera.inertia -= 0.05;
-          p1.isSprinting = false;
+          if (p1.isSprinting) {
+            camera.speed   -= 0.5;
+            camera.inertia -= 0.05;
+            p1.isSprinting = false;
+          }
           break;
   }}));
 }
@@ -101,10 +119,14 @@ var _initControls = function (scene, camera) {
   camera.speed              =   1.0;  //default 2
   camera.inertia            =   0.75; //default 0.9
   camera.angularSensibility = 750.0;  //default 2000, lower faster
+  camera.onCollide = function (collidedMesh) {
+    if (collidedMesh.jumpable) {
+      p1.canJumpAgain = true;
+  }}
 }
 
 var _initCollisionGravity = function (scene, camera) {
-  scene.gravity = new BABYLON.Vector3(0, -0.3, 0); //-9.81
+  scene.gravity = new BABYLON.Vector3(0, -0.2, 0); //-9.81
   camera.applyGravity = true;
   camera.ellipsoid = new BABYLON.Vector3(1, 2, 1); //default 0.5, 1, 0.5
   camera.position.y = 4; // match collision ellipsoid
