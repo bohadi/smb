@@ -1,6 +1,7 @@
 const BABYLON = require('../cdn/babylon.js');
 
 const PL = require('./pointerLock.js');
+const UTIL = require('./util.js');
 
 //PLAYER STATE
 var p1 = {
@@ -20,6 +21,25 @@ var p1 = {
   sprintSpeed        : 1.5,
   sprintInertia      : 0.70,
   angularSensibility : 1200,  //default 2000, lower faster
+  body : {
+    head  : null,
+    lHand : null,
+    rHand : null,
+    chest : null,
+    lFoot : null,
+    rFoot : null,
+  },
+  is2HStance : false,
+  equip : {
+    lHand   : null,
+    rHand   : null,
+    head    : null,
+    chest   : null,
+    arms    : null,
+    legs    : null,
+    feet    : null,
+  },
+  inventory : [],
 }
 
 var _initJumpAnim = function(scene, camera) {
@@ -44,6 +64,7 @@ var _initJumpAnim = function(scene, camera) {
 var _initP1Animations = function(scene, camera) {
   camera.animations.push(_initJumpAnim(scene, camera));
   //TODO p1 state change anims
+  //TODO toggleSheath animations
   //camera.animations.push(_initJumpAnim(scene, camera));
 }
 
@@ -62,7 +83,98 @@ var _setRunOrWalkSpeed = function(camera) {
     camera.inertia = p1.walkInertia;
 }}
 
+
+var _intoInventory = function(item) {
+  p1.inventory.push(item);
+  //TODO item pickup sound, update gui
+}
+var _equip = function (slot, item) {
+  //TODO stat changes, sound, animation, etc
+  p1.equip[slot] = item;
+  item.parent = p1.body[slot];
+  if (slot == 'lHand' || slot == 'rHand') {
+    item.position.x =  0.1;
+    item.position.y =  0.5;
+    item.position.z =  1.2;
+    item.rotation.x = UTIL.deg2rad(-30);
+    item.rotation.y = UTIL.deg2rad(10);
+  }
+  if (slot == 'head' ) {
+  }
+  if (slot == 'chest' ) {
+  }
+  if (slot == 'arms' ) {
+  }
+  if (slot == 'legs' ) {
+  }
+  if (slot == 'feet' ) {
+  }
+}
+var _unsheatheWeapon = function() {
+  p1.body.lHand.setEnabled(true);
+  p1.body.rHand.setEnabled(true);
+  //TODO sheathe animation and sound
+}
+var _sheatheWeapon = function() {
+  p1.body.lHand.setEnabled(false);
+  p1.body.rHand.setEnabled(false);
+  //TODO sheathe animation and sound
+}
+var _toggleSheath = function() {
+  p1.weaponDrawn = !p1.weaponDrawn;
+  if (p1.weaponDrawn)
+       { _unsheatheWeapon() }
+  else { _sheatheWeapon() }
+}
+
+var _initBody = function(scene, camera) {
+  //TODO move character mesh directly
+  p1.body.chest = BABYLON.MeshBuilder.CreateBox('chest', {width: 0.9, height: 1.4, depth: 0.5}, scene);
+  p1.body.chest.position.z = -10;
+  p1.body.chest.position.y = 2.7;
+  p1.body.head = BABYLON.MeshBuilder.CreateBox('head', {width: 0.5, height: 0.5, depth: 0.5}, scene);
+  p1.body.head.parent = p1.body.chest;
+  p1.body.head.position.y = 1.3;
+  //hands
+  p1.body.lHand = BABYLON.MeshBuilder.CreateBox('lHand', {width: 0.1, height: 0.1, depth: 0.1}, scene);
+  //p1.body.lHand.parent = p1.body.chest;
+  p1.body.lHand.parent = camera;
+  p1.body.lHand.position.x = -0.5;
+  p1.body.lHand.position.y = -0.5;
+  p1.body.lHand.position.z =  1.0;
+  p1.body.rHand = BABYLON.MeshBuilder.CreateBox('rHand', {width: 0.1, height: 0.1, depth: 0.1}, scene);
+  //p1.body.rHand.parent = p1.body.chest;
+  p1.body.rHand.parent = camera;
+  p1.body.rHand.position.x =  0.5;
+  p1.body.rHand.position.y = -0.5;
+  p1.body.rHand.position.z =  1.0;
+  //feet
+  p1.body.lFoot = BABYLON.MeshBuilder.CreateBox('lFoot', {width: 0.2, height: 0.1, depth: 0.4}, scene);
+  p1.body.lFoot.parent = p1.body.chest;
+  p1.body.lFoot.position.x = -0.5;
+  p1.body.lFoot.position.y = -2.0;
+  p1.body.lFoot.position.z =  0.2;
+  p1.body.rFoot = BABYLON.MeshBuilder.CreateBox('rFoot', {width: 0.2, height: 0.1, depth: 0.4}, scene);
+  p1.body.rFoot.parent = p1.body.chest;
+  p1.body.rFoot.position.x =  0.5;
+  p1.body.rFoot.position.y = -2.0;
+  p1.body.rFoot.position.z =  0.2;
+}
+
+var _initCharacter = function(scene, camera) {
+  _initBody(scene, camera);
+  p1.body.lHand.setEnabled(p1.weaponDrawn);
+  p1.body.rHand.setEnabled(p1.weaponDrawn);
+
+  var sword = BABYLON.MeshBuilder.CreateBox('sword', {width: 0.05, height: 0.2, depth: 2.5}, scene);
+  _intoInventory(sword); 
+  //TODO 2h stance
+  p1.is2HStance = true;
+  _equip('lHand', sword);
+}
+
 var _initControlsKBM = function (scene, camera) {
+  //TODO attach camera to body
   camera.keysUp    = [87]; //w 87
   camera.keysLeft  = [65]; //a 65
   camera.keysDown  = [83]; //s 83
@@ -71,6 +183,8 @@ var _initControlsKBM = function (scene, camera) {
   scene.actionManager = new BABYLON.ActionManager(scene);
   scene.actionManager.registerAction(
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+      evt.sourceEvent.preventDefault();
+      evt.sourceEvent.stopPropagation();
       switch (evt.sourceEvent.keyCode) {
         case 32: //spacebar jump
           //TODO can double jump
@@ -89,9 +203,7 @@ var _initControlsKBM = function (scene, camera) {
           p1.isSneaking  = !p1.isSneaking;
           break;
         case 82: //r weapon drawn / sheath -> lmb/rmb unlock cursor for combat maneuver
-          p1.weaponDrawn = !p1.weaponDrawn;
-          //TODO some animation
-          console.log('weapon: '+p1.weaponDrawn);
+          _toggleSheath();
           break;
         case 69: //e interaction mode -> lmb pick objects / rmb unlock cursor for social emote
           p1.socialMode  = true;
@@ -103,6 +215,8 @@ var _initControlsKBM = function (scene, camera) {
   }}));
   scene.actionManager.registerAction(
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+      evt.sourceEvent.preventDefault();
+      evt.sourceEvent.stopPropagation();
       switch (evt.sourceEvent.keyCode) {
         case 16: //shift up, stop sprinting
           p1.isSprinting = false;
@@ -156,6 +270,7 @@ exports.setupCameraAndControls = function(canvas, scene) {
   _initControls(scene, camera);
   PL._initPointerLock(canvas, camera);
   _initCollisionGravity(scene, camera);
+  _initCharacter(scene, camera);
   _initP1Animations(scene, camera);
   return camera;
 }
