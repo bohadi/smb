@@ -14,13 +14,15 @@ var p1 = {
   isSneaking   : false,
   isSwimming   : false,
   canJumpAgain : true,
-  walkSpeed          : 0.7,
-  walkInertia        : 0.10,
-  runSpeed           : 1.0,         //default 2
-  runInertia         : 0.65,        //default 0.9
+  walkSpeed          : 0.9,   //default 2
+  walkInertia        : 0.33,  //default 0.9
+  walkAngSens        : 1200,  //default 2000, lower faster rotation
+  runSpeed           : 1.2,   
+  runInertia         : 0.65, 
+  runAngSens         : 1200, 
   sprintSpeed        : 1.5,
-  sprintInertia      : 0.70,
-  angularSensibility : 1200,  //default 2000, lower faster
+  sprintInertia      : 0.72,
+  sprintAngSens      : 1200,  
   body : {
     head  : null,
     lHand : null,
@@ -76,11 +78,13 @@ var _jump = function (scene, camera) {
 
 var _setRunOrWalkSpeed = function(camera) {
   if (p1.isRunning) { 
-    camera.speed   = p1.runSpeed;
-    camera.inertia = p1.runInertia;
+    camera.speed              = p1.runSpeed;
+    camera.inertia            = p1.runInertia;
+    camera.angularSensibility = p1.runAngSens;
   } else {
-    camera.speed   = p1.walkSpeed;
-    camera.inertia = p1.walkInertia;
+    camera.speed              = p1.walkSpeed;
+    camera.inertia            = p1.walkInertia;
+    camera.angularSensibility = p1.walkAngSens;
 }}
 
 
@@ -184,7 +188,7 @@ var _initControlsKBM = function (scene, camera) {
   scene.actionManager.registerAction(
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
       evt.sourceEvent.preventDefault();
-      evt.sourceEvent.stopPropagation();
+      //evt.sourceEvent.stopPropagation();   //interferes with fullscreen
       switch (evt.sourceEvent.keyCode) {
         case 32: //spacebar jump
           //TODO can double jump
@@ -215,8 +219,8 @@ var _initControlsKBM = function (scene, camera) {
   }}));
   scene.actionManager.registerAction(
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
-      evt.sourceEvent.preventDefault();
-      evt.sourceEvent.stopPropagation();
+      //evt.sourceEvent.preventDefault();
+      //evt.sourceEvent.stopPropagation();
       switch (evt.sourceEvent.keyCode) {
         case 16: //shift up, stop sprinting
           p1.isSprinting = false;
@@ -234,8 +238,9 @@ var _initControls = function (scene, camera) {
   _initControlsKBM(scene, camera);
   camera.speed              =   p1.runSpeed;  
   camera.inertia            =   p1.runInertia;
-  camera.angularSensibility =   p1.angularSensibility;
+  camera.angularSensibility =   p1.runAngSens;
   camera.onCollide = function (collidedMesh) {
+    //TODO this is a hack
     if (collidedMesh.jumpable) {
       p1.canJumpAgain = true;
   }}

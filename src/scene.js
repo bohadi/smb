@@ -21,7 +21,12 @@ var camera = CC.setupCameraAndControls(canvas, scene);
 //scene.enablePhysics(gravity, physicsPlugin);
 //console.log(scene.isPhysicsEnabled());
 
-//TODO pointerlock on fullscreen
+//TODO this is an aggressive hack
+ var maxWindow = function maximize() {
+    //window.moveTo(0, 0);
+    //window.resizeTo(screen.width, screen.height);
+    engine.setSize(screen.width, screen.height);
+}
 var isFullScreen = false;
 var onFullScreenChange = function () {
   if 	    (document.fullscreen !== undefined)         isFullScreen = document.fullscreen;
@@ -41,11 +46,12 @@ var switchFullscreen = function () {
 //TODO when fullscreen and walking cannot pointerlock right... window resize problem
 //TODO removes fps element
 document.addEventListener("keydown", function (evt) {
-  if (evt.ctrlKey && evt.shiftKey && evt.keyCode == '70') {
+  //if (evt.ctrlKey && evt.shiftKey && evt.keyCode == '70') { //ctl shft f
+  if (evt.keyCode == '113') { //f2
     //switchFullscreen();
     //PL._initPointerLock(canvas, null);
+    //maxWindow();
     engine.switchFullscreen(true);
-    console.log('fs');
     //engine.resize();
   };
 }, false);
