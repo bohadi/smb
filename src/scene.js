@@ -6,6 +6,7 @@ const BABYLON = require('../cdn/babylon.js');
 const CC = require('./cameraControls.js');
 
 
+var renderZone = document.getElementById('renderZone');
 var canvas = document.getElementById('renderCanvas');
 var engine = new BABYLON.Engine(canvas);
 var scene = new BABYLON.Scene(engine);
@@ -20,23 +21,32 @@ var camera = CC.setupCameraAndControls(canvas, scene);
 //scene.enablePhysics(gravity, physicsPlugin);
 //console.log(scene.isPhysicsEnabled());
 
-//TODO fullscreen
+//TODO pointerlock on fullscreen
 var isFullScreen = false;
 var onFullScreenChange = function () {
-  if 	  (document.fullscreen !== undefined)         isFullScreen = document.fullscreen;
+  if 	    (document.fullscreen !== undefined)         isFullScreen = document.fullscreen;
   else if (document.mozFullScreen !== undefined)      isFullScreen = document.mozFullScreen;
   else if (document.webkitIsFullScreen !== undefined) isFullScreen = document.webkitIsFullScreen;
   else if (document.msIsFullScreen !== undefined)     isFullScreen = document.msIsFullScreen;
 }
+document.addEventListener("fullscreenchange",  	    onFullScreenChange, false);
+document.addEventListener("mozfullscreenchange", 	  onFullScreenChange, false);
+document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
+document.addEventListener("msfullscreenchange", 	  onFullScreenChange, false);
 var switchFullscreen = function () {
   if (isFullScreen) BABYLON.Tools.ExitFullscreen();
-  else BABYLON.Tools.RequestFullscreen(canvas);
+  else BABYLON.Tools.RequestFullscreen(renderZone);
 };
-document.addEventListener("fullscreenchange",  	    onFullScreenChange, false);
-document.addEventListener("mozfullscreenchange", 	onFullScreenChange, false);
-document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
-document.addEventListener("msfullscreenchange", 	onFullScreenChange, false);
-canvas.onclick = switchFullscreen();
+//TODO doesn't resize; change from shortcut to button
+//TODO removes fps element
+document.addEventListener("keydown", function (evt) {
+  if (evt.ctrlKey && evt.shiftKey && evt.keyCode == '70') {
+    //switchFullscreen();
+    engine.switchFullscreen(true);
+    console.log('fs');
+    //engine.resize();
+  };
+}, false);
 
 //lighting
 var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
@@ -156,5 +166,5 @@ window.addEventListener('DOMContentLoaded', function() {
     engine.resize();
   });
 
-});
+}, false);
 

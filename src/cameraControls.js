@@ -22,8 +22,7 @@ var p1 = {
   angularSensibility : 1200,  //default 2000, lower faster
 }
 
-
-var _initjumpAnim = function(scene, camera) {
+var _initJumpAnim = function(scene, camera) {
   var animation = new BABYLON.Animation("jump", "position.y", 30,
     BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   var keys = [
@@ -39,11 +38,18 @@ var _initjumpAnim = function(scene, camera) {
     //play jump sound
     console.log('jumpsound');
   }))
-  camera.animations.push(animation);
+  return animation;
+}
+
+var _initP1Animations = function(scene, camera) {
+  camera.animations.push(_initJumpAnim(scene, camera));
+  //TODO p1 state change anims
+  //camera.animations.push(_initJumpAnim(scene, camera));
 }
 
 //TODO if off ground and did not jump, use jump...
 var _jump = function (scene, camera) {
+  //TODO how to reference specific animation?
   scene.beginAnimation(camera, 0, 30, false, 2);
 } 
 
@@ -67,7 +73,7 @@ var _initControlsKBM = function (scene, camera) {
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
       switch (evt.sourceEvent.keyCode) {
         case 32: //spacebar jump
-          console.log(p1.canJumpAgain);
+          //TODO can double jump
           if (p1.canJumpAgain) {
             _jump(scene, camera);
             p1.canJumpAgain = false;
@@ -84,6 +90,7 @@ var _initControlsKBM = function (scene, camera) {
           p1.isSneaking  = !p1.isSneaking;
           break;
         case 18: //alt toggle run/walk
+          //TODO alt breaks pointerlock
           _setRunOrWalkSpeed(camera);
           p1.isRunning   = !p1.isRunning;
           break;
@@ -152,7 +159,7 @@ exports.setupCameraAndControls = function(canvas, scene) {
   _initControls(scene, camera);
   PL._initPointerLock(canvas, camera);
   _initCollisionGravity(scene, camera);
-  _initjumpAnim(scene, camera);
+  _initP1Animations(scene, camera);
   return camera;
 }
 
