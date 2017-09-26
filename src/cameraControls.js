@@ -80,6 +80,7 @@ var _initControlsKBM = function (scene, camera) {
           }
           break;
         case 16: //shift hold to sprint
+          //TODO gradually accelerate from walk/run to sprint speed
           camera.speed   = p1.sprintSpeed;
           camera.inertia = p1.sprintInertia;
           p1.isSprinting = true;
