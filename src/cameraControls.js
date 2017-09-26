@@ -49,14 +49,13 @@ var _initPointerLock = function(canvas, camera) {
 var _jump = function (scene, camera) {
   var animation = new BABYLON.Animation("jump", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   var keys = [
-    { frame: 0, value: camera.position.y },
-    { frame: 15, value: camera.position.y + 2 },
-    { frame: 30, value: camera.position.y }
+    { frame:  0, value: camera.position.y },
+    { frame: 30, value: camera.position.y + 2 }
   ];
   animation.setKeys(keys);
-  var easingFunction = new BABYLON.SineEase();
-  easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT);
-  animation.setEasingFunction(easingFunction);
+  var easefn = new BABYLON.QuadraticEase();
+  easefn.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT);
+  animation.setEasingFunction(easefn);
   camera.animations.push(animation);
   scene.beginAnimation(camera, 0, 30, false, 2);
 } 
@@ -73,8 +72,9 @@ var _initControlsKBM = function (scene, camera) {
       switch (evt.sourceEvent.keyCode) {
         case 32: //spacebar jump
           if (p1.canJumpAgain) {
-            _jump(scene, camera);
             p1.canJumpAgain = false;
+            console.log(1)
+            _jump(scene, camera);
           }
           break;
         case 16: //shift hold to sprint
@@ -133,6 +133,7 @@ var _initCollisionGravity = function (scene, camera) {
   scene.collisionsEnabled = true;
   //scene.workerCollisions = true;
   camera.checkCollisions = true;
+  camera._needMoveForGravity = true;
 }
 
 //camera and controls

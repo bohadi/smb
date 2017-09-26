@@ -104,7 +104,7 @@ keys.push({ frame:  50, value:  6 });
 keys.push({ frame: 100, value:  3 });
 animationY.setKeys(keys)
 var ease = new BABYLON.SineEase();
-ease.setEasingMode(BABYLON.EasingFunction.EASINGmODE_EASEINOUT);
+ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
 animationY.setEasingFunction(ease);
 keys = [{   frame:   0, value: .0 }];
 keys.push({ frame:  25, value:  1 });
