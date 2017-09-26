@@ -11,7 +11,8 @@
         {
             "taskName": "webpack dev server",
             "type": "shell",
-            "command": "webpack-dev-server"
+            "command": "webpack-dev-server",
+            "problemMatcher": []
         }
     ]
 }
