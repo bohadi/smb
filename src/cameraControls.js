@@ -4,6 +4,7 @@ const PL = require('./pointerLock.js');
 const UTIL = require('./util.js');
 
 //PLAYER STATE
+exports.getP1 = function() {return p1}
 var p1 = {
   weaponDrawn  : false, //can attack
   castingMode  : false, //can use magic
@@ -15,14 +16,14 @@ var p1 = {
   isSwimming   : false,
   canJumpAgain : true,
   walkSpeed          : 0.9,   //default 2
-  walkInertia        : 0.33,  //default 0.9
-  walkAngSens        : 1200,  //default 2000, lower faster rotation
+  walkInertia        : 0.36,  //default 0.9
+  walkAngSens        : 1000,  //default 2000, lower faster rotation
   runSpeed           : 1.2,   
   runInertia         : 0.65, 
   runAngSens         : 1200, 
   sprintSpeed        : 1.5,
   sprintInertia      : 0.72,
-  sprintAngSens      : 1200,  
+  sprintAngSens      : 1300,  
   body : {
     head  : null,
     lHand : null,
@@ -48,6 +49,7 @@ var _initJumpAnim = function(scene, camera) {
   var animation = new BABYLON.Animation("jump", "position.y", 30,
     BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   var keys = [
+    //TODO without recreating the anim each jump, this saves the first y position...
     { frame:  0, value: camera.position.y },
     { frame: 15, value: camera.position.y + 3 },
     { frame: 30, value: camera.position.y }
@@ -62,38 +64,37 @@ var _initJumpAnim = function(scene, camera) {
   }))
   return animation;
 }
-
-var _initP1Animations = function(scene, camera) {
-  camera.animations.push(_initJumpAnim(scene, camera));
-  //TODO p1 state change anims
-  //TODO toggleSheath animations
-  //camera.animations.push(_initJumpAnim(scene, camera));
-}
-
 //TODO if off ground and did not jump, use jump...
 var _jump = function (scene, camera) {
   //TODO how to reference specific animation?
   scene.beginAnimation(camera, 0, 30, false, 2);
 } 
-
-var _setRunOrWalkSpeed = function(camera) {
-  if (p1.isRunning) { 
-    camera.speed              = p1.runSpeed;
-    camera.inertia            = p1.runInertia;
-    camera.angularSensibility = p1.runAngSens;
-  } else {
-    camera.speed              = p1.walkSpeed;
-    camera.inertia            = p1.walkInertia;
-    camera.angularSensibility = p1.walkAngSens;
-}}
-
+var _initP1Animations = function(scene, camera) {
+  camera.animations.push(_initJumpAnim(scene, camera));
+  //TODO p1 state change anims
+  //TODO toggleSheath animations
+}
 
 var _intoInventory = function(item) {
   p1.inventory.push(item);
   //TODO item pickup sound, update gui
 }
+
+var _setWeaponHitbox = function(weapon, hitbox) {
+  //TODO only quickly register and unregister during attack swing animation
+  weapon.registerAfterRender(function () {
+    if (weapon.intersectsMesh(p1.body[hitbox], true)) {
+      p1.body[hitbox].material.emissiveColor = new BABYLON.Color4(1, 0, 0, 1);
+    } else {
+      p1.body[hitbox].material.emissiveColor = new BABYLON.Color4(0, 0, 0, 1);
+    }
+  })
+}
+
 var _equip = function (slot, item) {
   //TODO stat changes, sound, animation, etc
+  //item.checkCollisions = true;o
+  //item.collisionMask = 1; //TODO only hitbox collisions, ground bug...
   p1.equip[slot] = item;
   item.parent = p1.body[slot];
   if (slot == 'lHand') {
@@ -102,12 +103,16 @@ var _equip = function (slot, item) {
     item.position.z =  1.2;
     item.rotation.x = UTIL.deg2rad(-30);
     item.rotation.y = UTIL.deg2rad(10);
+    _setWeaponHitbox(item, 'head');
+    _setWeaponHitbox(item, 'chest');
   } else if (slot == 'rHand') {
     item.position.x = -0.1;
     item.position.y =  0.5;
     item.position.z =  1.2;
     item.rotation.x = UTIL.deg2rad(-30);
     item.rotation.y = UTIL.deg2rad(-10);
+    _setWeaponHitbox(item, 'head');
+    _setWeaponHitbox(item, 'chest');
   } else if (slot == 'head' ) {
   } else if (slot == 'chest' ) {
   } else if (slot == 'arms' ) {
@@ -132,14 +137,23 @@ var _toggleSheath = function() {
   else { _sheatheWeapon() }
 }
 
+var _initIntersect = function(scene) {
+}
+
 var _initBody = function(scene, camera) {
   //TODO move character mesh directly
+  //chest
   p1.body.chest = BABYLON.MeshBuilder.CreateBox('chest', {width: 0.9, height: 1.4, depth: 0.5}, scene);
   p1.body.chest.position.z = -10;
   p1.body.chest.position.y = 2.7;
+  p1.body.chest.checkCollisions = true;
+  p1.body.chest.material = new BABYLON.StandardMaterial('chestMat', scene);
+  //head
   p1.body.head = BABYLON.MeshBuilder.CreateBox('head', {width: 0.5, height: 0.5, depth: 0.5}, scene);
   p1.body.head.parent = p1.body.chest;
   p1.body.head.position.y = 1.3;
+  p1.body.head.checkCollisions = true;
+  p1.body.head.material = new BABYLON.StandardMaterial('headMat', scene);
   //hands
   p1.body.lHand = BABYLON.MeshBuilder.CreateBox('lHand', {width: 0.1, height: 0.1, depth: 0.1}, scene);
   //p1.body.lHand.parent = p1.body.chest;
@@ -147,23 +161,27 @@ var _initBody = function(scene, camera) {
   p1.body.lHand.position.x = -0.5;
   p1.body.lHand.position.y = -0.5;
   p1.body.lHand.position.z =  1.0;
+  p1.body.lHand.checkCollisions = true; 
   p1.body.rHand = BABYLON.MeshBuilder.CreateBox('rHand', {width: 0.1, height: 0.1, depth: 0.1}, scene);
   //p1.body.rHand.parent = p1.body.chest;
   p1.body.rHand.parent = camera;
   p1.body.rHand.position.x =  0.5;
   p1.body.rHand.position.y = -0.5;
   p1.body.rHand.position.z =  1.0;
+  p1.body.rHand.checkCollisions = true;
   //feet
   p1.body.lFoot = BABYLON.MeshBuilder.CreateBox('lFoot', {width: 0.2, height: 0.1, depth: 0.4}, scene);
   p1.body.lFoot.parent = p1.body.chest;
   p1.body.lFoot.position.x = -0.5;
   p1.body.lFoot.position.y = -2.0;
   p1.body.lFoot.position.z =  0.2;
+  p1.body.lFoot.checkCollisions = true;
   p1.body.rFoot = BABYLON.MeshBuilder.CreateBox('rFoot', {width: 0.2, height: 0.1, depth: 0.4}, scene);
   p1.body.rFoot.parent = p1.body.chest;
   p1.body.rFoot.position.x =  0.5;
   p1.body.rFoot.position.y = -2.0;
   p1.body.rFoot.position.z =  0.2;
+  p1.body.rFoot.checkCollisions = true;
 }
 
 var _initCharacter = function(scene, camera) {
@@ -175,8 +193,19 @@ var _initCharacter = function(scene, camera) {
   _intoInventory(sword); 
   //TODO 2h stance
   p1.is2HStance = true;
-  _equip('rHand', sword);
+  _equip('lHand', sword);
 }
+
+var _setRunOrWalkSpeed = function(camera) {
+  if (p1.isRunning) { 
+    camera.speed              = p1.runSpeed;
+    camera.inertia            = p1.runInertia;
+    camera.angularSensibility = p1.runAngSens;
+  } else {
+    camera.speed              = p1.walkSpeed;
+    camera.inertia            = p1.walkInertia;
+    camera.angularSensibility = p1.walkAngSens;
+}}
 
 var _initControlsKBM = function (scene, camera) {
   //TODO attach camera to body
@@ -259,7 +288,7 @@ var _initControls = function (scene, camera) {
 var _initCollisionGravity = function (scene, camera) {
   scene.gravity = new BABYLON.Vector3(0, -0.3, 0); //-9.81
   camera.applyGravity = true;
-  camera.ellipsoid = new BABYLON.Vector3(1, 2, 1); //default 0.5, 1, 0.5
+  camera.ellipsoid = new BABYLON.Vector3(0.5, 2, 0.5); //default 0.5, 1, 0.5
   camera.position.y = 4; // match collision ellipsoid
   scene.collisionsEnabled = true;
   //scene.workerCollisions = true;

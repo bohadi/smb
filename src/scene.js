@@ -6,10 +6,12 @@ const BABYLON = require('../cdn/babylon.js');
 const CC = require('./cameraControls.js');
 const PL = require('./pointerLock.js');
 
+//var p1 = CC.getP1();
 
 var canvas = document.getElementById('renderCanvas');
 var engine = new BABYLON.Engine(canvas);
 var scene = new BABYLON.Scene(engine);
+scene.debugLayer.show();
 
 engine.renderEvenInBackground = false;
 
@@ -94,7 +96,9 @@ sphere3.checkCollisions = true;
 sphere4.checkCollisions = true;
 lathe.checkCollisions   = true;
 ground.checkCollisions  = true;
+ground.collisionMask = 1; // only certain objects collide with ground (eg. not weapons)
 ground.jumpable = true;
+
 
 //materials
 ground.material = new BABYLON.StandardMaterial('grass', scene);
