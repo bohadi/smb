@@ -11,7 +11,7 @@ const PL = require('./pointerLock.js');
 var canvas = document.getElementById('renderCanvas');
 var engine = new BABYLON.Engine(canvas);
 var scene = new BABYLON.Scene(engine);
-scene.debugLayer.show();
+//scene.debugLayer.show();
 
 engine.renderEvenInBackground = false;
 
@@ -90,15 +90,32 @@ lathe.position.x = -2;
 lathe.convertToFlatShadedMesh();
 var ground = BABYLON.MeshBuilder.CreateGround('ground1',
   {width:60, height:60, subdivisions:4}, scene);
+
+var platform1 = BABYLON.MeshBuilder.CreateGround('platform1',
+  {width:4, height:4, subdivisions:4}, scene);
+platform1.position.x = 15;
+platform1.position.y = 2;
+platform1.position.z = 3;
+var platform2 = BABYLON.MeshBuilder.CreateGround('platform2',
+  {width:4, height:4, subdivisions:4}, scene);
+platform2.position.x = 15;
+platform2.position.y = 4;
+platform2.position.z = 6;
+var platform3 = BABYLON.MeshBuilder.CreateGround('platform3',
+  {width:4, height:4, subdivisions:4}, scene);
+platform3.position.x = 15;
+platform3.position.y = 6;
+platform3.position.z = 9;
+
 sphere1.checkCollisions = true;
 sphere2.checkCollisions = true;
 sphere3.checkCollisions = true;
 sphere4.checkCollisions = true;
 lathe.checkCollisions   = true;
 ground.checkCollisions  = true;
-ground.collisionMask = 1; // only certain objects collide with ground (eg. not weapons)
-ground.jumpable = true;
-
+platform1.checkCollisions  = true;
+platform2.checkCollisions  = true;
+platform3.checkCollisions  = true;
 
 //materials
 ground.material = new BABYLON.StandardMaterial('grass', scene);
@@ -152,11 +169,11 @@ for (var i = 0; i < numShrubs; i++) {
 }
 
 //distant valley
-var ground2 = BABYLON.MeshBuilder.CreateGround('ground2',
+var distant = BABYLON.MeshBuilder.CreateGround('distant',
   {width:600, height:600, subdivisions:4}, scene);
-ground2.material = ground.material;
-ground2.position.y = -1000;
-ground2.position.z = 1000;
+distant.material = ground.material;
+distant.position.y = -1000;
+distant.position.z = 1000;
 var shrubtreeSpriteManager2 =
   new BABYLON.SpriteManager('shrubtreeMgr2', 'img/sprite_tree.png', 10*numShrubs, 650, scene);
 for (var i = 0; i < 10*numShrubs; i++) {
