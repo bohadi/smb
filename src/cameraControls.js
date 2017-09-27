@@ -327,7 +327,6 @@ exports.setupCameraAndControls = function(canvas, scene) {
   camera.minZ = 0;    //default 1
   camera.attachControl(canvas, false);
   _initControls(scene, camera);
-  PL._initPointerLock(canvas, camera);
   _initCollisionGravity(scene, camera);
   _initCharacter(scene, camera);
   //_initP1Animations(scene, camera);

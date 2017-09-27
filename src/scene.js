@@ -15,13 +15,15 @@ var scene = new BABYLON.Scene(engine);
 
 engine.renderEvenInBackground = false;
 
-//camera and controls
-var camera = CC.setupCameraAndControls(canvas, scene);
-
 //var gravity = new BABYLON.Vector3(0,-0.5,0);
 //var physicsPlugin = new BABYLON.CannonJSPlugin();
 //scene.enablePhysics(gravity, physicsPlugin);
 //console.log(scene.isPhysicsEnabled());
+
+//camera and controls
+var camera = CC.setupCameraAndControls(canvas, scene);
+
+//PL.initPointerLock(canvas);
 
 //TODO this is an aggressive hack
  var maxWindow = function maximize() {
@@ -182,6 +184,19 @@ for (var i = 0; i < 10*numShrubs; i++) {
   shrub.position.x =  -300 + 600*Math.random();
   shrub.position.z =  1000-300 + 600*Math.random();
   shrub.size       =   .5 + .5*Math.random();
+}
+
+scene.onPointerDown = function (pEvt, pickResult) {
+  var screenWidth = canvas.offsetWidth, screenHeight = canvas.offsetHeight;
+  //supply your own PointerLock variable(s)
+  if(engine.isPointerLock) 
+    var pick = scene.pick(screenWidth / 2, screenHeight / 2);
+  else
+    var pick = scene.pick(scene.pointerX, scene.pointerY);
+  if (pickResult.hit) {
+    //TODO what to do about pointerlock
+    console.log(engine.isPointerLock+pickResult.pickedPoint);
+  }
 }
 
 //render the scene and post-setup
