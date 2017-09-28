@@ -243,7 +243,8 @@ var _initControlsKBM = function (scene, camera) {
       //evt.sourceEvent.stopPropagation();   //interferes with fullscreen
       switch (evt.sourceEvent.keyCode) {
         case 32: //spacebar jump
-          //TODO can double jump
+          //TODO can double jump -> groundcheck (each frame in render loop? see q3demo)
+          //see http://media.tojicode.com/q3bsp/js/q3movement.js
           if (p1.canJump) {
             _jump(scene, camera);
             //p1.canJump = false;

@@ -1,7 +1,8 @@
 //include scripts in index.html
-const PEP     = require('../cdn/pep.min.js');
-const CANNON  = require('../cdn/cannon.min.js');
-const BABYLON = require('../cdn/babylon.js');
+//const PEP     = require('../cdn/pep.min.js');
+//const CANNON  = require('../cdn/cannon.min.js');
+//const BABYLON = require('../cdn/babylon.js');
+//const STATS = require('../cdn/stats.min.js');
 
 const CC = require('./cameraControls.js');
 const PL = require('./pointerLock.js');
@@ -185,7 +186,7 @@ ps3.gravity = new BABYLON.Vector3(0, -9, 0);
 ps3.direction1 = new BABYLON.Vector3(-3, 3,  3);
 ps3.direction2 = new BABYLON.Vector3( 3, 5, -3);
 ps3.updateSpeed = 0.013; //.01 default, higher -> faster animation
-ps3.targetStopDuration = 10;
+//ps3.targetStopDuration = 10;
 ps3.start();
 
 //animations
@@ -263,8 +264,28 @@ scene.onPointerDown = function (pEvt, pickResult) {
 //render the scene and post-setup
 window.addEventListener('DOMContentLoaded', function() {
   var fps = document.getElementById('fps');
+  var fpsStat = new Stats();
+  fpsStat.showPanel( 0 ); 
+  var msStat = new Stats();
+  msStat.showPanel( 1 ); 
+  var memStat = new Stats();
+  memStat.showPanel( 2 ); 
+  fpsStat.domElement.style.cssText = 'position:absolute;top:0px;left:0px;';
+  msStat.domElement.style.cssText = 'position:absolute;top:0px;left:80px;';
+  memStat.domElement.style.cssText = 'position:absolute;top:0px;left:160px;';
+  document.body.appendChild( fpsStat.dom );
+  document.body.appendChild( msStat.dom );
+  document.body.appendChild( memStat.dom );
   engine.runRenderLoop(function() {
+    fpsStat.begin();
+    msStat.begin();
+    memStat.begin();
+
     scene.render();
+
+    fpsStat.end();
+    msStat.end();
+    memStat.end();
     fps.innerHTML = engine.getFps().toFixed(0) + ' fps';
   });
   window.addEventListener('resize', function() {
