@@ -184,8 +184,9 @@ ps3.emitRate = 500; //10 default
 ps3.gravity = new BABYLON.Vector3(0, -9, 0);
 ps3.direction1 = new BABYLON.Vector3(-3, 3,  3);
 ps3.direction2 = new BABYLON.Vector3( 3, 5, -3);
+ps3.updateSpeed = 0.013; //.01 default, higher -> faster animation
+ps3.targetStopDuration = 10;
 ps3.start();
-console.log(ps3)
 
 //animations
 var animationZ = new BABYLON.Animation('a1', 'rotation.z', 30,
