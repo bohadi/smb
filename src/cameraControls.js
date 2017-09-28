@@ -1,6 +1,6 @@
 const BABYLON = require('../cdn/babylon.js');
 
-const PL = require('./pointerLock.js');
+//const PL = require('./pointerLock.js');
 const UTIL = require('./util.js');
 
 //TODO refactor player and item management out

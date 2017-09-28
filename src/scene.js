@@ -6,7 +6,7 @@ const BABYLON = require('../cdn/babylon.js');
 const CC = require('./cameraControls.js');
 const PL = require('./pointerLock.js');
 
-//var p1 = CC.getP1();
+var p1 = CC.getP1();
 
 var canvas = document.getElementById('renderCanvas');
 var engine = new BABYLON.Engine(canvas);
@@ -15,6 +15,7 @@ var scene = new BABYLON.Scene(engine);
 
 engine.renderEvenInBackground = false;
 
+//TODO seems this can work now
 //var gravity = new BABYLON.Vector3(0,-0.5,0);
 //var physicsPlugin = new BABYLON.CannonJSPlugin();
 //scene.enablePhysics(gravity, physicsPlugin);
@@ -23,7 +24,7 @@ engine.renderEvenInBackground = false;
 //camera and controls
 var camera = CC.setupCameraAndControls(canvas, scene);
 
-//PL.initPointerLock(canvas);
+PL.initPointerLock(canvas);
 
 //TODO this is an aggressive hack
  var maxWindow = function maximize() {
@@ -87,7 +88,7 @@ var lathe = BABYLON.MeshBuilder.CreateLathe('lathe', {shape: [
   new BABYLON.Vector3(.7,1,0),
   new BABYLON.Vector3(0,2,0),
 ]})
-lathe.position.y = 2;
+lathe.position.y = 0;
 lathe.position.x = -2;
 lathe.convertToFlatShadedMesh();
 var ground = BABYLON.MeshBuilder.CreateGround('ground1',
@@ -108,6 +109,21 @@ var platform3 = BABYLON.MeshBuilder.CreateGround('platform3',
 platform3.position.x = 15;
 platform3.position.y = 6;
 platform3.position.z = 9;
+var fountain = BABYLON.MeshBuilder.CreateLathe('fountain', {shape: [
+  new BABYLON.Vector3(0,0,0),
+  new BABYLON.Vector3(2,0,0),
+  new BABYLON.Vector3(.4,.8,0),
+  new BABYLON.Vector3(.4,1,0),
+  new BABYLON.Vector3(4,1.6,0),
+  new BABYLON.Vector3(.3,1.6,0),
+  new BABYLON.Vector3(.4,3.6,0),
+  new BABYLON.Vector3(.3,4,0),
+  new BABYLON.Vector3(0,4,0),
+]})
+fountain.position.x = -13;
+fountain.position.y = 0;
+fountain.position.z = 13;
+fountain.convertToFlatShadedMesh();
 
 sphere1.checkCollisions = true;
 sphere2.checkCollisions = true;
@@ -118,6 +134,7 @@ ground.checkCollisions  = true;
 platform1.checkCollisions  = true;
 platform2.checkCollisions  = true;
 platform3.checkCollisions  = true;
+fountain.checkCollisions = true;
 
 //materials
 ground.material = new BABYLON.StandardMaterial('grass', scene);
@@ -127,6 +144,48 @@ ground.material.diffuseTexture.vScale = 10.0;
 ground.material.specularColor = new BABYLON.Color3(0,0,0);
 sphere4.material = new BABYLON.StandardMaterial('rainbow', scene);
 sphere4.material.diffuseTexture = new BABYLON.Texture('./img/rainbow.jpg', scene);
+fountain.material = new BABYLON.StandardMaterial('fountain', scene);
+fountain.material.diffuseTexture = new BABYLON.Texture('./img/stone.jpg', scene);
+
+//particles - note, if transparency/alpha in scene -> mesh-based solid particle sys
+var ps1 = new BABYLON.ParticleSystem('ps1', 2000, scene);
+ps1.particleTexture = new BABYLON.Texture('img/alphaparticle.png', scene);
+//ps2.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+ps1.textureMask = new BABYLON.Color4(0.1, 0.8, 0.8, 1.0);
+ps1.emitter = lathe;
+ps1.minEmitBox = new BABYLON.Vector3(-.5,1,-.5); //-0.5 defaults
+ps1.maxEmitBox = new BABYLON.Vector3(.5,1.5,.5); // 0.5 defaults
+ps1.start();
+var ps2 = new BABYLON.ParticleSystem('ps2', 2000, scene);
+ps2.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+ps2.particleTexture = new BABYLON.Texture('img/smoke.png', scene);
+//TODO jk, got it, black smoke... hooray
+ps2.textureMask = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
+//ps2.color1 = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
+//ps2.color2 = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
+ps2.emitter = lathe;
+ps2.minEmitBox = new BABYLON.Vector3(-.6,3,-.6); //-0.5 defaults
+ps2.maxEmitBox = new BABYLON.Vector3(.6,3.5,.6); // 0.5 defaults
+ps2.start();
+var ps3 = new BABYLON.ParticleSystem('ps3', 2000, scene);
+ps3.particleTexture = new BABYLON.Texture('img/particle.png', scene);
+ps3.textureMask = new BABYLON.Color4(1.0, 1.0, 1.0, 0.0);
+ps3.color1 = new BABYLON.Color4(0.0, 0.2, 1.0, 1.0);
+ps3.color2 = new BABYLON.Color4(0.1, 0.3, 1.0, 1.0);
+ps3.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+ps3.emitter = fountain;
+ps3.minEmitBox = new BABYLON.Vector3(-.5,2,-.5); //-0.5 defaults
+ps3.maxEmitBox = new BABYLON.Vector3(.5,4,.5); // 0.5 defaults
+ps3.minSize = 0.05; //1 default
+ps3.maxSize = 1;   //1 default
+ps3.minLifeTime = 0.5; //1 default
+ps3.maxLifeTime = 1.5; //1 default
+ps3.emitRate = 500; //10 default
+ps3.gravity = new BABYLON.Vector3(0, -9, 0);
+ps3.direction1 = new BABYLON.Vector3(-3, 3,  3);
+ps3.direction2 = new BABYLON.Vector3( 3, 5, -3);
+ps3.start();
+console.log(ps3)
 
 //animations
 var animationZ = new BABYLON.Animation('a1', 'rotation.z', 30,
@@ -190,12 +249,13 @@ scene.onPointerDown = function (pEvt, pickResult) {
   var screenWidth = canvas.offsetWidth, screenHeight = canvas.offsetHeight;
   //supply your own PointerLock variable(s)
   if(engine.isPointerLock) 
+    //TODO doesnt seem to work?
     var pick = scene.pick(screenWidth / 2, screenHeight / 2);
   else
     var pick = scene.pick(scene.pointerX, scene.pointerY);
   if (pickResult.hit) {
-    //TODO what to do about pointerlock
-    console.log(engine.isPointerLock+pickResult.pickedPoint);
+    //TODO pick up item etc
+    //console.log(engine.isPointerLock+pickResult.pickedPoint);
   }
 }
 

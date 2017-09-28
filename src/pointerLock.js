@@ -1,3 +1,5 @@
+//TODO almost obviated...
+
 exports.getIsPointerLocked = function() {return isPointerLocked}
 var isPointerLocked = false;
 
