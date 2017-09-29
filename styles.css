@@ -25,11 +25,11 @@ html, body {
   position: absolute;
   right   : 20px;
   top     : 20px;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-width: 1px;
   opacity: 1.0;
-  transform: scale(0.9);
+  transform: scale(0.8);
   background: url("./img/fullscreen.png") no-repeat center center;
   background-size: 100%;
 }
