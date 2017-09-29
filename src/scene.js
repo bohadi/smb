@@ -64,27 +64,33 @@ document.addEventListener("keydown", function (evt) {
     //engine.resize();
   };
 }, false);
+//=======================================================================================
 
-//TODO skybox
+//skybox
+scene.createDefaultSkybox(new BABYLON.CubeTexture('./img/skybox/desert', scene));
+//scene.createDefaultSkybox(new BABYLON.CubeTexture('./img/skybox/mtn', scene));
 
+//=======================================================================================
 //lighting
 var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
-light.intensity = 0.2;
+light.intensity = 0.5;
 var spotlight = new BABYLON.SpotLight('spotlight',
   new BABYLON.Vector3(19, 17, 15), new BABYLON.Vector3(-.6, -1, -.3), 1.4, 1, scene);
-spotlight.diffuse = new BABYLON.Color3(.3,.3,.3).add(BABYLON.Color3.Random());
+spotlight.diffuse = BABYLON.Color3.White();
 var lamp = new BABYLON.MeshBuilder.CreateCylinder('lamp', {diameter:5}, scene);
 lamp.material = new BABYLON.StandardMaterial('lampcolor', scene);
-lamp.material.diffuseColor = spotlight.diffuse.add(BABYLON.Color3.Gray());
+lamp.material.diffuseColor = BABYLON.Color3.Random();
 lamp.position.x = 20;
 lamp.position.y = 16;
 lamp.position.z = 15;
 lamp.rotation.x = UTIL.deg2rad(64);
 lamp.rotation.y = UTIL.deg2rad(57);
 //lamp.rotation.z = UTIL.deg2rad(15);
+//=======================================================================================
 
 //TODO volumetric light 'godrays'
 
+//=======================================================================================
 //meshes
 var sphere1 = BABYLON.MeshBuilder.CreateSphere('sphere1', {segments:2, diameter:2}, scene);
 sphere1.position.y = 3;
@@ -133,7 +139,7 @@ platform3.position.x = 15;
 platform3.position.y = 6;
 platform3.position.z = 9;
 
-sphere1.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+p1.body.head.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
 platform1.billboardMode = BABYLON.Mesh.BILLBOARDMODE_Y;
 platform2.billboardMode = BABYLON.Mesh.BILLBOARDMODE_Z;
 platform3.billboardMode = BABYLON.Mesh.BILLBOARDMODE_X;
@@ -153,6 +159,7 @@ fountain.position.x = -13;
 fountain.position.y = 0;
 fountain.position.z = 13;
 fountain.convertToFlatShadedMesh();
+//=======================================================================================
 
 //collision
 sphere1.checkCollisions = true;
@@ -170,6 +177,7 @@ p1.body.chest.checkCollisions = true;
 p1.body.lFoot.checkCollisions = true;
 p1.body.rFoot.checkCollisions = true;
 
+//=======================================================================================
 //shadows
 var shadowGenerator = new BABYLON.ShadowGenerator(512, spotlight);
 shadowGenerator.getShadowMap().renderList.push(platform1);
@@ -210,7 +218,9 @@ shadowGenerator.useBlurCloseExponentialShadowMap = true;
 spotlight.shadowMinZ= 10;
 spotlight.shadowMaxZ= 30;
 //shadowGenerator.frustumEdgeFalloff = 1.0;
+//=======================================================================================
 
+//=======================================================================================
 //materials
 ground.material = new BABYLON.StandardMaterial('grass', scene);
 ground.material.diffuseTexture = new BABYLON.Texture('./img/grass.png', scene);
@@ -262,7 +272,9 @@ ps3.direction2 = new BABYLON.Vector3( 3, 5, -3);
 ps3.updateSpeed = 0.013; //.01 default, higher -> faster animation
 //ps3.targetStopDuration = 10;
 ps3.start();
+//=======================================================================================
 
+//=======================================================================================
 //animations
 var animationZ = new BABYLON.Animation('a1', 'rotation.z', 30,
   BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE);
@@ -289,7 +301,9 @@ keys.push({ frame: 100, value: .0 });
 animationX.setKeys(keys)
 sphere4.animations = [ animationY, animationZ ];
 scene.beginAnimation(sphere4, 0, 100, true);
+//=======================================================================================
 
+//=======================================================================================
 //sprites
 //TODO sprites do not cast shadows or receive light (ie. whiterun field problem)
 var numShrubs = 3000;
@@ -305,7 +319,9 @@ for (var i = 0; i < numShrubs; i++) {
   shrub.position.z =  -30 + 60*Math.random();
   shrub.size       =   .5 + .5*Math.random();
 }
+//=======================================================================================
 
+//=======================================================================================
 //distant valley
 var distant = BABYLON.MeshBuilder.CreateGround('distant',
   {width:600, height:600, subdivisions:4}, scene);
@@ -322,6 +338,7 @@ for (var i = 0; i < 10*numShrubs; i++) {
   shrub.size       =   .5 + .5*Math.random();
 }
 
+//mouse events
 scene.onPointerDown = function (pEvt, pickResult) {
   var screenWidth = canvas.offsetWidth, screenHeight = canvas.offsetHeight;
   //supply your own PointerLock variable(s)
@@ -335,7 +352,9 @@ scene.onPointerDown = function (pEvt, pickResult) {
     //console.log(engine.isPointerLock+pickResult.pickedPoint);
   }
 }
+//=======================================================================================
 
+//=======================================================================================
 //render the scene and post-setup
 window.addEventListener('DOMContentLoaded', function() {
   var fps = document.getElementById('fps');

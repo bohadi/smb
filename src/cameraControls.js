@@ -46,7 +46,9 @@ var p1 = {
   },
   inventory : [],
 }
+//=======================================================================================
 
+//=======================================================================================
 //TODO this isnt very neat
 var hitboxFns = [];
 
@@ -218,7 +220,9 @@ var _initCharacter = function(scene, camera) {
   p1.is2HStance = true;
   _equip('lHand', sword);
 }
+//=======================================================================================
 
+//=======================================================================================
 var _setRunOrWalkSpeed = function(camera) {
   if (p1.isRunning) { 
     camera.speed              = p1.runSpeed;
@@ -319,7 +323,9 @@ var _initCollisionGravity = function (scene, camera) {
   scene.collisionsEnabled = true;
   //scene.workerCollisions = true;
 }
+//=======================================================================================
 
+//=======================================================================================
 //camera and controls
 exports.setupCameraAndControls = function(canvas, scene) {
   var camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(1,2,-20), scene);
