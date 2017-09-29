@@ -81,6 +81,7 @@ var _initJumpAnim = function(scene, camera) {
 //TODO if walk off ground and did not jump, use jump anyway...
 var _jump = function (scene, camera) {
   //TODO how to reference specific animation?
+  //TODO air control -> limit speed/inertia/angular while airborne
   camera.animations.push(_initJumpAnim(scene, camera));
   scene.beginAnimation(camera, 0, 20);
   camera.animations.pop();
@@ -240,7 +241,7 @@ var _initControlsKBM = function (scene, camera) {
   scene.actionManager.registerAction(
     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
       evt.sourceEvent.preventDefault();
-      //evt.sourceEvent.stopPropagation();   //interferes with fullscreen
+      //evt.sourceEvent.stopPropagation();
       switch (evt.sourceEvent.keyCode) {
         case 32: //spacebar jump
           //TODO can double jump -> groundcheck (each frame in render loop? see q3demo)
@@ -280,7 +281,6 @@ var _initControlsKBM = function (scene, camera) {
           _setRunOrWalkSpeed(camera);
           break;
         case 18: //alt toggle run/walk
-          //TODO alt breaks pointerlock when not in fullscreen
           p1.isRunning = !p1.isRunning;
           _setRunOrWalkSpeed(camera);
           break;

@@ -45,8 +45,9 @@ document.addEventListener("mozfullscreenchange", 	  onFullScreenChange, false);
 document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
 document.addEventListener("msfullscreenchange", 	  onFullScreenChange, false);
 var switchFullscreen = function () {
-  if (isFullScreen) BABYLON.Tools.ExitFullscreen();
-  else BABYLON.Tools.RequestFullscreen(canvas);
+  engine.switchFullscreen(true);
+  //if (isFullScreen) BABYLON.Tools.ExitFullscreen();
+  //else BABYLON.Tools.RequestFullscreen(canvas);
 };
 //TODO doesn't resize
 //TODO when fullscreen and walking cannot pointerlock right... window resize problem
@@ -62,8 +63,16 @@ document.addEventListener("keydown", function (evt) {
   };
 }, false);
 
+//TODO skybox
+
 //lighting
 var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
+light.intensity = 0.75;
+var spotlight = new BABYLON.SpotLight('spotlight',
+  new BABYLON.Vector3(18, 14, 13), new BABYLON.Vector3(-.5, -1, -0.3), 1.2, 2, scene);
+spotlight.diffuse = new BABYLON.Color3(1, 1, 1);
+
+//TODO volumetric light 'godrays'
 
 //meshes
 var sphere1 = BABYLON.MeshBuilder.CreateSphere('sphere1', {segments:2, diameter:2}, scene);
@@ -81,6 +90,7 @@ var sphere4 = BABYLON.MeshBuilder.CreateSphere('sphere4', {segments:16, diameter
 sphere4.position.y = 3;
 sphere4.position.x = 6;
 sphere4.convertToFlatShadedMesh();
+
 var lathe = BABYLON.MeshBuilder.CreateLathe('lathe', {shape: [
   new BABYLON.Vector3(0,0,0),
   new BABYLON.Vector3(1,.1,0),
@@ -92,24 +102,31 @@ var lathe = BABYLON.MeshBuilder.CreateLathe('lathe', {shape: [
 lathe.position.y = 0;
 lathe.position.x = -2;
 lathe.convertToFlatShadedMesh();
+
 var ground = BABYLON.MeshBuilder.CreateGround('ground1',
   {width:60, height:60, subdivisions:4}, scene);
 
-var platform1 = BABYLON.MeshBuilder.CreateGround('platform1',
-  {width:4, height:4, subdivisions:4}, scene);
+var platform1 = BABYLON.MeshBuilder.CreateBox('platform1',
+  {width:3, height:1, depth:3}, scene);
 platform1.position.x = 15;
 platform1.position.y = 2;
 platform1.position.z = 3;
-var platform2 = BABYLON.MeshBuilder.CreateGround('platform2',
-  {width:4, height:4, subdivisions:4}, scene);
+var platform2 = BABYLON.MeshBuilder.CreateBox('platform2',
+  {width:3, height:1, depth:3}, scene);
 platform2.position.x = 15;
 platform2.position.y = 4;
 platform2.position.z = 6;
-var platform3 = BABYLON.MeshBuilder.CreateGround('platform3',
-  {width:4, height:4, subdivisions:4}, scene);
+var platform3 = BABYLON.MeshBuilder.CreateBox('platform3',
+  {width:3, height:1, depth:3}, scene);
 platform3.position.x = 15;
 platform3.position.y = 6;
 platform3.position.z = 9;
+
+sphere1.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+platform1.billboardMode = BABYLON.Mesh.BILLBOARDMODE_Y;
+platform2.billboardMode = BABYLON.Mesh.BILLBOARDMODE_Z;
+platform3.billboardMode = BABYLON.Mesh.BILLBOARDMODE_X;
+
 var fountain = BABYLON.MeshBuilder.CreateLathe('fountain', {shape: [
   new BABYLON.Vector3(0,0,0),
   new BABYLON.Vector3(2,0,0),
@@ -126,6 +143,7 @@ fountain.position.y = 0;
 fountain.position.z = 13;
 fountain.convertToFlatShadedMesh();
 
+//collision
 sphere1.checkCollisions = true;
 sphere2.checkCollisions = true;
 sphere3.checkCollisions = true;
@@ -136,6 +154,24 @@ platform1.checkCollisions  = true;
 platform2.checkCollisions  = true;
 platform3.checkCollisions  = true;
 fountain.checkCollisions = true;
+
+//shadows
+var shadowGenerator = new BABYLON.ShadowGenerator(512, spotlight);
+shadowGenerator.getShadowMap().renderList.push(platform1);
+shadowGenerator.getShadowMap().renderList.push(platform2);
+shadowGenerator.getShadowMap().renderList.push(platform3);
+shadowGenerator.getShadowMap().renderList.push(sphere4);
+shadowGenerator.getShadowMap().renderList.push(sphere3);
+shadowGenerator.getShadowMap().renderList.push(sphere2);
+shadowGenerator.getShadowMap().renderList.push(sphere1);
+platform1.receiveShadows = true;
+platform2.receiveShadows = true;
+platform3.receiveShadows = true;
+sphere1.receiveShadows = true;
+sphere2.receiveShadows = true;
+sphere3.receiveShadows = true;
+sphere4.receiveShadows = true;
+ground.receiveShadows = true;
 
 //materials
 ground.material = new BABYLON.StandardMaterial('grass', scene);
@@ -217,6 +253,7 @@ sphere4.animations = [ animationY, animationZ ];
 scene.beginAnimation(sphere4, 0, 100, true);
 
 //sprites
+//TODO sprites do not cast shadows or receive light (ie. whiterun field problem)
 var numShrubs = 3000;
 var shrubtreeSpriteManager =
   new BABYLON.SpriteManager('shrubtreeMgr', 'img/sprite_tree.png', numShrubs+1, 650, scene);
