@@ -67,7 +67,7 @@ document.addEventListener("keydown", function (evt) {
 //=======================================================================================
 
 //skybox
-scene.createDefaultSkybox(new BABYLON.CubeTexture('./img/skybox/desert', scene));
+scene.createDefaultSkybox(new BABYLON.CubeTexture('./img/skybox/desert', scene), false, 10000);
 //scene.createDefaultSkybox(new BABYLON.CubeTexture('./img/skybox/mtn', scene));
 
 //=======================================================================================
@@ -89,6 +89,25 @@ lamp.rotation.y = UTIL.deg2rad(57);
 //=======================================================================================
 
 //TODO volumetric light 'godrays'
+
+//=======================================================================================
+
+//fog
+scene.fogColor = new BABYLON.Color3(0.5, 0.3, 0.0);
+//scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+//scene.fogStart = 10;
+//scene.fogEnd = 40;
+scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
+x = 0;
+holdframes = 0;
+scene.registerBeforeRender(function() {
+  scene.fogDensity = Math.max(.05 * Math.sin(x) + .05,
+  .09 * Math.sin(x/0.6  + .1) +
+  .05 * Math.sin(x/1.2  + .2) +
+  .04 * Math.sin(x/0.2  + .3) +
+  .07 * Math.sin(x/3.0  + .5));
+  x += 0.01;
+});
 
 //=======================================================================================
 //meshes
