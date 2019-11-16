@@ -93,7 +93,7 @@ lamp.rotation.y = UTIL.deg2rad(57);
 //=======================================================================================
 
 //fog
-scene.fogColor = new BABYLON.Color3(0.5, 0.3, 0.0);
+scene.fogColor = new BABYLON.Color3(0.2, 0.1, 0.0);
 //scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
 //scene.fogStart = 10;
 //scene.fogEnd = 40;
